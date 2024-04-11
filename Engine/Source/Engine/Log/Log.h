@@ -36,11 +36,15 @@ private:
 
 } // namespace sl
 
+#ifndef SL_FINAL
+
 inline std::ostream &operator<<(std::ostream &os, const sl::Event &event)
 {
 	return os << event.ToString();
 }
 template <> struct fmt::formatter<sl::Event> : ostream_formatter {};
+
+#endif
 
 #ifndef SL_FINAL
 	// Engine logger macros.
