@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Event/Event.h"
+
 #ifndef SL_FINAL
 	#pragma warning(push)
 	#pragma warning(disable:4996)
@@ -31,6 +33,12 @@ private:
 };
 
 } // namespace sl
+
+inline std::ostream &operator<<(std::ostream &os, const sl::Event &event)
+{
+	return os << event.ToString();
+}
+template <> struct fmt::formatter<sl::Event> : ostream_formatter {};
 
 #ifndef SL_FINAL
 	// Engine logger macros.

@@ -14,7 +14,7 @@ project("Editor")
 	-- Set definitions.
 	defines
 	{
-		"SPDLOG_NO_EXCEPTIONS",
+		"SPDLOG_NO_EXCEPTIONS", "SPDLOG_FMT_EXTERNAL", "SPDLOG_COMPILED_LIB",
 	}
 	
 	filter { "configurations:Debug" }
@@ -33,6 +33,7 @@ project("Editor")
 		EnginePath,
 		EditorPath,
 		ThirdPartyPath,
+		path.join(ThirdPartyPath, "fmt/include"),
 		path.join(ThirdPartyPath, "spdlog/include"),
 	}
 	
@@ -40,7 +41,13 @@ project("Editor")
 	files
 	{
 		path.join(EditorPath, "**.*"),
+		path.join(ThirdPartyPath, "spdlog/fmt/**.*"),
 		path.join(ThirdPartyPath, "spdlog/include/**.*"),
+	}
+	
+	removefiles
+	{
+		path.join(ThirdPartyPath, "spdlog/include/spdlog/fmt/bundled/**.*"),
 	}
 	
 	-- Link to engine.
@@ -58,28 +65,31 @@ project("Editor")
 		libdirs
 		{
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
+			path.join(ThirdPartyPath, "spdlog/build/Debug"),
 		}
 		links
 		{
-			"Slam",
+			"Slam", "spdlogd"
 		}
 	filter { "configurations:Release" }
 		libdirs
 		{
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
+			path.join(ThirdPartyPath, "spdlog/build/Release"),
 		}
 		links
 		{
-			"Slam",
+			"Slam", "spdlog"
 		}
 	filter { "configurations:Final" }
 		libdirs
 		{
 			path.join(BinaryPath, "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/Slam"),
+			path.join(ThirdPartyPath, "spdlog/build/Release"),
 		}
 		links
 		{
-			"Slam",
+			"Slam", "spdlog"
 		}
 	filter {}
 	

@@ -13,7 +13,7 @@ project("Slam")
 	-- Set definitions.
 	defines
 	{
-		"SPDLOG_NO_EXCEPTIONS",
+		"SPDLOG_NO_EXCEPTIONS", "SPDLOG_FMT_EXTERNAL", "SPDLOG_COMPILED_LIB",
 	}
 	
 	filter { "configurations:Debug" }
@@ -31,6 +31,7 @@ project("Slam")
 	{
 		EnginePath,
 		ThirdPartyPath,
+		path.join(ThirdPartyPath, "fmt/include"),
 		path.join(ThirdPartyPath, "spdlog/include"),
 	}
 	
@@ -38,10 +39,44 @@ project("Slam")
 	files
 	{
 		path.join(EnginePath, "**.*"),
+		path.join(ThirdPartyPath, "fmt/include/**.*"),
 		path.join(ThirdPartyPath, "spdlog/include/**.*"),
 	}
 	
+	removefiles
+	{
+		path.join(ThirdPartyPath, "spdlog/include/spdlog/fmt/bundled/**.*"),
+	}
+	
 	-- Link to thirdparty libs.
+	filter { "configurations:Debug" }
+		libdirs
+		{
+			path.join(ThirdPartyPath, "spdlog/build/Debug"),
+		}
+		links
+		{
+			"spdlogd"
+		}
+	filter { "configurations:Release" }
+		libdirs
+		{
+			path.join(ThirdPartyPath, "spdlog/build/Release"),
+		}
+		links
+		{
+			"spdlog"
+		}
+	filter { "configurations:Final" }
+		libdirs
+		{
+			path.join(ThirdPartyPath, "spdlog/build/Release"),
+		}
+		links
+		{
+			"spdlog"
+		}
+	filter {}
 	
 	-- Use /MT and /MTd.
 	staticruntime "on"
