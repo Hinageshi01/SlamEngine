@@ -4,7 +4,9 @@
 
 #ifndef SL_FINAL
 	#pragma warning(push)
+	// For deprecated stdext::checked_array_iterator
 	#pragma warning(disable:4996)
+	// For rtti dynamic_cast
 	#pragma warning(disable:4541)
 		#include <spdlog/spdlog.h>
 		#include <spdlog/fmt/ostr.h>
