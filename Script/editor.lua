@@ -14,7 +14,7 @@ project("Editor")
 	-- Set definitions.
 	defines
 	{
-		"SPDLOG_NO_EXCEPTIONS", "SPDLOG_FMT_EXTERNAL", "SPDLOG_COMPILED_LIB",
+		"SPDLOG_NO_EXCEPTIONS", "SPDLOG_FMT_EXTERNAL", "FMT_HEADER_ONLY", "SPDLOG_COMPILED_LIB",
 	}
 	
 	filter { "configurations:Debug" }
