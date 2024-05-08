@@ -1,6 +1,9 @@
 #include "Editor.h"
 
 #include "Core/Log.h"
+#include "Event/CameraEvent.h"
+#include "Event/MouseEvent.h"
+#include "Event/SceneViewportEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "Layer/LayerStack.h"
@@ -114,6 +117,10 @@ void Editor::OnEvent(sl::Event &event)
 	sl::EventDispatcher dispatcher{ event };
 	dispatcher.Dispatch<sl::WindowCloseEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowClose));
 	dispatcher.Dispatch<sl::WindowResizeEvent>(BIND_EVENT_CALLBACK(Editor::OnWindowResize));
+	dispatcher.Dispatch<sl::SceneViewportGetFocusEvent>(BIND_EVENT_CALLBACK(Editor::OnSceneViewportGetFocus));
+	dispatcher.Dispatch<sl::SceneViewportLostFocusEvent>(BIND_EVENT_CALLBACK(Editor::OnSceneViewportLostFocus));
+	dispatcher.Dispatch<sl::CameraControllerEvent>(BIND_EVENT_CALLBACK(Editor::OnCameraController));
+	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(Editor::OnMouseRelease));
 
 	// Iterate layers from end to begin / top to bottom.
 	for (auto it = m_pLayerStack->rend(); it != m_pLayerStack->rbegin(); ++it)
@@ -129,8 +136,8 @@ void Editor::OnEvent(sl::Event &event)
 bool Editor::OnWindowClose(sl::WindowCloseEvent &event)
 {
 	SL_EDITOR_TRACE("Window closed");
-
 	m_isRunning = false;
+
 	return true;
 }
 
@@ -147,4 +154,42 @@ bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 	}
 
 	return true;
+}
+
+bool Editor::OnSceneViewportGetFocus(sl::SceneViewportGetFocusEvent &event)
+{
+	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
+	camera.m_isActive = true;
+	return true;
+}
+
+bool Editor::OnSceneViewportLostFocus(sl::SceneViewportLostFocusEvent &event)
+{
+	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
+
+	camera.m_isActive = false;
+	camera.m_isRotating = false;
+	camera.m_isMoving = false;
+
+	return true;
+}
+
+bool Editor::OnCameraController(sl::CameraControllerEvent &event)
+{
+	if (sl::CameraControllerMode::FPS == event.GetMode())
+	{
+		m_pWindow->CaptureCursor();
+	}
+	else if (sl::CameraControllerMode::Editor == event.GetMode())
+	{
+		m_pWindow->CaptureCursor();
+	}
+
+	return false;
+}
+
+bool Editor::OnMouseRelease(sl::MouseButtonReleaseEvent &event)
+{
+	m_pWindow->ReleaseCursor();
+	return false;
 }

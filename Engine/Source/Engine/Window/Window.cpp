@@ -67,12 +67,12 @@ void Window::SetVSync(bool VSync)
 #endif
 }
 
-void Window::DisableCursor() const
+void Window::CaptureCursor() const
 {
 	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-void Window::EnableCursor() const
+void Window::ReleaseCursor() const
 {
 	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }

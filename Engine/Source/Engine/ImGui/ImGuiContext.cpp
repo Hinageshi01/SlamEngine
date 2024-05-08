@@ -116,7 +116,7 @@ void ImGuiContext::SetColor()
 	colors[ImGuiCol_TitleBgActive] = bgColorLight;
 	colors[ImGuiCol_TitleBgCollapsed] = bgColorLight;
 
-	colors[ImGuiCol_MenuBarBg] = bgColorLight;
+	colors[ImGuiCol_MenuBarBg] = bgColor;
 
 	colors[ImGuiCol_ScrollbarBg] = bgColorLight;
 	colors[ImGuiCol_ScrollbarGrab] = itemColorLight;

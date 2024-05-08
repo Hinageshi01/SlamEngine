@@ -7,8 +7,8 @@ namespace sl
 
 class MouseScrollEvent;
 class SceneViewportResizeEvent;
-class SceneViewportGetFocusEvent;
-class SceneViewportLostFocusEvent;
+class CameraControllerEvent;
+class MouseButtonReleaseEvent;
 
 }
 
@@ -26,9 +26,11 @@ public:
 
 private:
 	void UpdateMainCamera(float deltaTime);
+	void UpdateFPSCamera(float deltaTime);
+	void UpdateEditorCamera(float deltaTime);
 
 	bool OnMouseScroll(sl::MouseScrollEvent &event);
 	bool OnSceneViewportResize(sl::SceneViewportResizeEvent &event);
-	bool OnSceneViewportGetFocus(sl::SceneViewportGetFocusEvent &event);
-	bool OnSceneViewportLostFocus(sl::SceneViewportLostFocusEvent &event);
+	bool OnCameraController(sl::CameraControllerEvent &event);
+	bool OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event);
 };

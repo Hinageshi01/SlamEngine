@@ -12,6 +12,9 @@ class WindowCloseEvent;
 class WindowResizeEvent;
 class MouseButtonReleaseEvent;
 class SceneViewportGetFocusEvent;
+class SceneViewportLostFocusEvent;
+class CameraControllerEvent;
+class MouseButtonReleaseEvent;
 class Window;
 class LayerStack;
 
@@ -54,6 +57,10 @@ private:
 	void OnEvent(sl::Event &event);
 	bool OnWindowClose(sl::WindowCloseEvent &event);
 	bool OnWindowResize(sl::WindowResizeEvent &event);
+	bool OnSceneViewportGetFocus(sl::SceneViewportGetFocusEvent &event);
+	bool OnSceneViewportLostFocus(sl::SceneViewportLostFocusEvent &event);
+	bool OnCameraController(sl::CameraControllerEvent &event);
+	bool OnMouseRelease(sl::MouseButtonReleaseEvent &event);
 
 	bool m_isRunning = true;
 	bool m_isMinimized = false;

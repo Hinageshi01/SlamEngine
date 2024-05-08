@@ -89,4 +89,28 @@ public:
 	}
 };
 
+class SceneViewportHoverEvent : public Event
+{
+public:
+	static EventType GetStaticEventType()
+	{
+		return EventType::SceneViewportHover;
+	}
+
+	virtual EventType GetEventType() const override
+	{
+		return GetStaticEventType();
+	}
+
+	virtual std::string ToString() const override
+	{
+		return "SceneViewportHover";
+	}
+
+	virtual uint8_t GetCategories() const override
+	{
+		return SL_EVENT_CATEGORY_SCENE_VIEWPORT;
+	}
+};
+
 } // namespace sl

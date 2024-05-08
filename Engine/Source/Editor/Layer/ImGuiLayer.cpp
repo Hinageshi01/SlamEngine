@@ -1,6 +1,7 @@
 #include "ImGuiLayer.h"
 
 #include "Core/Log.h"
+#include "Event/CameraEvent.h"
 #include "Event/SceneViewportEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
@@ -81,6 +82,14 @@ bool AlignButton(const char *label, float align = 0.5f, float offset = 0.0f)
 	}
 
 	return ImGui::Button(label);
+}
+
+void RightClickFocus()
+{
+	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered())
+	{
+		ImGui::SetWindowFocus();
+	}
 }
 
 }
@@ -215,6 +224,8 @@ void ImGuiLayer::ShowEntityList()
 {
 	ImGui::Begin("Entity List");
 
+	RightClickFocus();
+
 	if (ImGui::Button("+"))
 	{
 		sl::ECSWorld::CreateEntity("Empty Entity");
@@ -269,7 +280,7 @@ void ImGuiLayer::ShowEntityList()
 	}
 
 	// Left click at enpty space to clear selected entity.
-	if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+	if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	{
 		m_selectedEntity.Reset();
 	}
@@ -281,6 +292,8 @@ void ImGuiLayer::ShowLog()
 {
 	ImGui::Begin("Log");
 
+	RightClickFocus();
+
 	ImGui::Text("TODO");
 
 	ImGui::End();
@@ -289,6 +302,8 @@ void ImGuiLayer::ShowLog()
 void ImGuiLayer::ShowInfo(float deltaTime)
 {
 	ImGui::Begin("Info");
+
+	RightClickFocus();
 
 	// Infos
 	{
@@ -451,6 +466,8 @@ void ImGuiLayer::StartWithText(std::string text)
 void ImGuiLayer::ShowDetails()
 {
 	ImGui::Begin("Details");
+
+	RightClickFocus();
 
 	if (!m_selectedEntity)
 	{
@@ -656,10 +673,24 @@ void ImGuiLayer::ShowSceneViewport()
 
 	// Scene viewport event stuff
 	{
-		if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+		// Camera event
+		if (ImGui::IsWindowHovered())
 		{
-			ImGui::SetWindowFocus();
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+			{
+				ImGui::SetWindowFocus();
+
+				sl::CameraControllerEvent event{ sl::CameraControllerMode::FPS };
+				m_eventCallback(event);
+			}
+			else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyPressed(ImGuiKey_LeftAlt))
+			{
+				sl::CameraControllerEvent event{ sl::CameraControllerMode::Editor };
+				m_eventCallback(event);
+			}
 		}
+
+		// Focus event
 		if (bool crtFocus = ImGui::IsWindowFocused(); crtFocus != m_isSceneViewportFocused)
 		{
 			if (crtFocus)
@@ -675,6 +706,7 @@ void ImGuiLayer::ShowSceneViewport()
 			m_isSceneViewportFocused = crtFocus;
 		}
 
+		// Resize event
 		auto crtSize = ImGui::GetContentRegionAvail();
 		uint32_t crtSizeX = (uint32_t)crtSize.x;
 		uint32_t crtSizeY = (uint32_t)crtSize.y;
