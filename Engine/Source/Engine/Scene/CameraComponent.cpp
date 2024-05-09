@@ -17,13 +17,8 @@ void CameraComponent::Reset()
 	m_orthoSize = 10.0f;
 	m_orthoNearClip = -10.0f;
 	m_orthoFarClip = 10.0f;
-	m_isActive = false;
-	m_isRotating = false;
-	m_isMoving = false;
 	m_rotateSpeed = glm::radians(0.05f);
 	m_maxMoveSpeed = 0.016f;
-	m_acceleration = 0.0f;
-	m_moveSpeed = 0.0f;
 	m_moveSpeedKeyShiftMultiplier = 4.0f;
 	m_moveSpeedMouseScrollMultiplier = 1.0f;
 	m_isDirty = true;
@@ -62,13 +57,10 @@ void CameraComponent::Recalculate()
 	m_frontDir.y = glm::sin(rotation.x);
 	m_frontDir.z = glm::sin(rotation.y) * glm::cos(rotation.x);
 	m_frontDir = glm::normalize(m_frontDir);
-
 	m_rightDir = glm::normalize(glm::cross(m_frontDir, WorldUp));
 	m_upDir = glm::normalize(glm::cross(m_rightDir, m_frontDir));
 
-	// TODO: Orthogonal camera
 	m_viewMat = glm::lookAt(position, position + m_frontDir, m_upDir);
-
 	if (ProjectionType::Perspective == m_projectionType)
 	{
 		m_projectionMat = glm::perspective(m_fov * m_fovMultiplier, m_aspect, m_nearPlane, m_farPlane);
@@ -83,7 +75,6 @@ void CameraComponent::Recalculate()
 	}
 
 	m_viewProjectionMat = m_projectionMat * m_viewMat;
-
 	m_isDirty = false;
 }
 

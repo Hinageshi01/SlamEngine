@@ -5,6 +5,13 @@
 namespace sl
 {
 
+enum class CameraControllerMode : uint8_t
+{
+	None,
+	FPS,
+	Editor,
+};
+
 enum class GraphicsBackend : uint8_t
 {
 	None = 0,

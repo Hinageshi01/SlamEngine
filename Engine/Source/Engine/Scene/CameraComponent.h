@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Event/CameraEvent.h"
-
 #include <glm/mat4x4.hpp>
 #include <glm/trigonometric.hpp>
 #include <glm/vec2.hpp>
@@ -43,12 +41,6 @@ struct CameraComponent
 	float m_orthoFarClip = 10.0f;
 
 	// Camera Controller datas
-	CameraControllerMode m_controllerMode = CameraControllerMode::None;
-
-	bool m_isActive = false;
-	bool m_isRotating = false;
-	bool m_isMoving = false;
-
 	float m_rotateSpeed = glm::radians(0.05f);
 	float m_maxMoveSpeed = 0.016f;
 	float m_acceleration = 0.0f;

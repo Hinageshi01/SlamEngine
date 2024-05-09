@@ -1,5 +1,7 @@
 #include "CameraControllerLayer.h"
 
+#include "Event/CameraEvent.h"
+#include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 #include "Event/SceneViewportEvent.h"
 #include "Scene/ECSWorld.h"
@@ -33,7 +35,7 @@ void CameraControllerLayer::OnEvent(sl::Event &event)
 	sl::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<sl::MouseScrollEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseScroll));
 	dispatcher.Dispatch<sl::SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnSceneViewportResize));
-	dispatcher.Dispatch<sl::CameraControllerEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnCameraController));
+	dispatcher.Dispatch<sl::CameraActivateEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnCameraActivate));
 	dispatcher.Dispatch<sl::MouseButtonReleaseEvent>(BIND_EVENT_CALLBACK(CameraControllerLayer::OnMouseButtonRelease));
 }
 
@@ -58,26 +60,21 @@ void CameraControllerLayer::EndFrame()
 
 void CameraControllerLayer::UpdateMainCamera(float deltaTime)
 {
-	auto &camera = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>();
-
-	if (!camera.m_isActive)
+	if (sl::CameraControllerMode::None == m_controllerMode)
 	{
+		m_isRotating = false;
+		m_isMoving = false;
 		return;
 	}
 
-	if (sl::CameraControllerMode::FPS == camera.m_controllerMode)
+	if (sl::CameraControllerMode::FPS == m_controllerMode)
 	{
 		UpdateFPSCamera(deltaTime);
 	}
-	else if(sl::CameraControllerMode::Editor == camera.m_controllerMode)
+	else if(sl::CameraControllerMode::Editor == m_controllerMode)
 	{
-		camera.m_controllerMode = sl::CameraControllerMode::Editor;
+		m_controllerMode = sl::CameraControllerMode::Editor;
 		UpdateEditorCamera(deltaTime);
-	}
-	else
-	{
-		camera.m_isRotating = false;
-		camera.m_isMoving = false;
 	}
 }
 
@@ -85,13 +82,13 @@ void CameraControllerLayer::UpdateFPSCamera(float deltaTime)
 {
 	auto [camera, transform] = sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent, sl::TransformComponent>();
 
-	if (!camera.m_isRotating)
+	if (!m_isRotating)
 	{
 		// When the camera starts to rotate.
 		camera.m_acceleration = 0.0f;
 		camera.m_moveSpeed = 0.0f;
 		camera.m_mouseLastPos = sl::Input::GetMousePos();
-		camera.m_isRotating = true;
+		m_isRotating = true;
 	}
 
 	// Rotation
@@ -119,11 +116,11 @@ void CameraControllerLayer::UpdateFPSCamera(float deltaTime)
 	glm::vec3 finalMoveDir;
 	if (moveKeyMask)
 	{
-		if (!camera.m_isMoving)
+		if (!m_isMoving)
 		{
 			// When the camera starts to move.
 			camera.m_acceleration = camera.m_maxMoveSpeed * sl::CameraComponent::MaxSpeedToAcceleration;
-			camera.m_isMoving = true;
+			m_isMoving = true;
 		}
 
 		finalMoveDir = glm::vec3{ 0.0f, 0.0f, 0.0f };
@@ -154,11 +151,11 @@ void CameraControllerLayer::UpdateFPSCamera(float deltaTime)
 	}
 	else
 	{
-		if (camera.m_isMoving)
+		if (m_isMoving)
 		{
 			// Stop moving
 			camera.m_acceleration = -camera.m_maxMoveSpeed * sl::CameraComponent::MaxSpeedToAcceleration;
-			camera.m_isMoving = false;
+			m_isMoving = false;
 		}
 		finalMoveDir = camera.m_lastMoveDir;
 	}
@@ -179,8 +176,7 @@ void CameraControllerLayer::UpdateEditorCamera(float deltaTime)
 
 bool CameraControllerLayer::OnMouseScroll(sl::MouseScrollEvent &event)
 {
-	if (!sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>().m_isActive ||
-		!sl::Input::IsMouseButtonPressed(SL_MOUSE_BUTTON_2))
+	if (sl::CameraControllerMode::None == m_controllerMode)
 	{
 		return false;
 	}
@@ -207,14 +203,30 @@ bool CameraControllerLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &
 	return true;
 }
 
-bool CameraControllerLayer::OnCameraController(sl::CameraControllerEvent &event)
+bool CameraControllerLayer::OnCameraActivate(sl::CameraActivateEvent &event)
 {
-	sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>().m_controllerMode = event.GetMode();
+	m_controllerMode = event.GetMode();
+
 	return false;
 }
 
 bool CameraControllerLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
 {
-	sl::ECSWorld::GetMainCameraEntity().GetComponent<sl::CameraComponent>().m_controllerMode = sl::CameraControllerMode::None;
+	if ((sl::CameraControllerMode::FPS == m_controllerMode && SL_MOUSE_BUTTON_2 == event.GetButton()) ||
+		(sl::CameraControllerMode::Editor == m_controllerMode && SL_MOUSE_BUTTON_1 == event.GetButton()))
+	{
+		m_controllerMode = sl::CameraControllerMode::None;
+	}
+
+	return false;
+}
+
+bool CameraControllerLayer::OnKeyRelease(sl::KeyReleaseEvent &event)
+{
+	if (sl::CameraControllerMode::Editor == m_controllerMode && SL_KEY_LEFT_ALT == event.GetKey())
+	{
+		m_controllerMode = sl::CameraControllerMode::None;
+	}
+
 	return false;
 }

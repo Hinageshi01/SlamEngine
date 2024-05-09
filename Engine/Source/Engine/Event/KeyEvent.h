@@ -12,7 +12,7 @@ class KeyPressEvent : public Event
 {
 public:
 	KeyPressEvent(int keycode, bool isRepeat = false)
-		: m_keyCode(keycode), m_isRepeat(isRepeat) {}
+		: m_key(keycode), m_isRepeat(isRepeat) {}
 
 	static EventType GetStaticEventType()
 	{
@@ -27,7 +27,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "KeyPress: " << m_keyCode << (m_isRepeat ? ", repeat" : "");
+		ss << "KeyPress: " << m_key << (m_isRepeat ? ", repeat" : "");
 		return ss.str();
 	}
 
@@ -36,18 +36,18 @@ public:
 		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_KEYBOARD;
 	}
 
-	int GetKeyCode() const { return m_keyCode; }
+	int GetKey() const { return m_key; }
 	bool IsRepeat() const { return m_isRepeat; }
 
 private:
-	int m_keyCode;
+	int m_key;
 	bool m_isRepeat;
 };
 
 class KeyReleaseEvent : public Event
 {
 public:
-	KeyReleaseEvent(int keycode) : m_keyCode(keycode) {}
+	KeyReleaseEvent(int keycode) : m_key(keycode) {}
 
 	static EventType GetStaticEventType()
 	{
@@ -62,7 +62,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "KeyRelease: " << m_keyCode;
+		ss << "KeyRelease: " << m_key;
 		return ss.str();
 	}
 
@@ -71,16 +71,16 @@ public:
 		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_KEYBOARD;
 	}
 
-	int GetKeyCode() const { return m_keyCode; }
+	int GetKey() const { return m_key; }
 
 private:
-	int m_keyCode;
+	int m_key;
 };
 
 class KeyTypeEvent : public Event
 {
 public:
-	KeyTypeEvent(int keycode) : m_keyCode(keycode) {}
+	KeyTypeEvent(int keycode) : m_key(keycode) {}
 
 	static EventType GetStaticEventType()
 	{
@@ -95,19 +95,18 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "KeyType: " << m_keyCode;
+		ss << "KeyType: " << m_key;
 		return ss.str();
 	}
-	virtual
-		uint8_t GetCategories() const override
+	virtual uint8_t GetCategories() const override
 	{
 		return SL_EVENT_CATEGORY_INPUT | SL_EVENT_CATEGORY_KEYBOARD;
 	}
 
-	int GetKeyCode() const { return m_keyCode; }
+	int GetKey() const { return m_key; }
 
 private:
-	int m_keyCode;
+	int m_key;
 };
 
 } // namespace sl

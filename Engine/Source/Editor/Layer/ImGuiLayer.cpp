@@ -376,15 +376,17 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 	{
 		ImGui::PushID(nameof::nameof_type<T>().data());
 
+		// Draw tree node
 		ImGui::PushFont(sl::Font::GetBold());
 		bool componentTreeOpen = ImGui::TreeNodeEx(label, DefaultTreeFlags, label);
 		ImGui::PopFont();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+		// Draw component menu button
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		ImGui::SameLine();
-		// Hard code 6.0f here to align to window's right side
 		if (AlignButton(" : ", 1.0f, 6.0f))
 		{
+			// Hard code 6.0f here to align to window's right side
 			ImGui::OpenPopup("ComponentPopup");
 		}
 		ImGui::PopStyleColor();
@@ -395,6 +397,13 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 			if (ImGui::MenuItem("Reset Component"))
 			{
 				pComponent->Reset();
+				if constexpr (std::is_same_v<T, sl::TransformComponent>)
+				{
+					if (auto pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
+					{
+						pCamera->m_isDirty;
+					}
+				}
 			}
 			if constexpr (!std::is_same_v<T, sl::TagComponent> && !std::is_same_v<T, sl::TransformComponent>)
 			{
@@ -406,6 +415,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 			ImGui::EndPopup();
 		}
 
+		// Draw component specific item
 		if (componentTreeOpen)
 		{
 			uiFunction(pComponent);
@@ -446,7 +456,7 @@ void ImGuiLayer::StartWithText(std::string text)
 		// ImGui::CalcTextSize("Position").x == 56.0f
 		// ImGui::CalcTextSize("Rotation").x == 56.0f
 		// Just a little trick to avoid Tag Component flickering when it is rendered the first time,
-		// as we know every Entity must hold both Tag and Transform Component.
+		// as we know every entity must hold both Tag and Transform component.
 		m_maxTextSize = 56.0f;
 		s_crtEntity = m_selectedEntity;
 	}
@@ -616,14 +626,14 @@ void ImGuiLayer::ShowDetails()
 
 			float rotateSpeedDegrees = glm::degrees(pComponent->m_rotateSpeed);
 			StartWithText("Rotate Speed");
-			if (ImGui::DragFloat("##RotateSpeed", &rotateSpeedDegrees, 0.01f), 0.0001f, 1.0f)
+			if (ImGui::DragFloat("##RotateSpeed", &rotateSpeedDegrees, 0.001f), 0.0001f, 1.0f)
 			{
 				pComponent->m_isDirty = true;
 				pComponent->m_rotateSpeed = glm::radians(rotateSpeedDegrees);
 			}
 
 			StartWithText("Move Speed");
-			if (ImGui::DragFloat("##MoveSpeed", &(pComponent->m_maxMoveSpeed), 0.01f), 0.0001f, 1.0f)
+			if (ImGui::DragFloat("##MoveSpeed", &(pComponent->m_maxMoveSpeed), 0.001f), 0.0001f, 1.0f)
 			{
 				pComponent->m_isDirty = true;
 			}
@@ -680,12 +690,12 @@ void ImGuiLayer::ShowSceneViewport()
 			{
 				ImGui::SetWindowFocus();
 
-				sl::CameraControllerEvent event{ sl::CameraControllerMode::FPS };
+				sl::CameraActivateEvent event{ sl::CameraControllerMode::FPS };
 				m_eventCallback(event);
 			}
-			else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyPressed(ImGuiKey_LeftAlt))
+			else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
 			{
-				sl::CameraControllerEvent event{ sl::CameraControllerMode::Editor };
+				sl::CameraActivateEvent event{ sl::CameraControllerMode::Editor };
 				m_eventCallback(event);
 			}
 		}
@@ -718,10 +728,19 @@ void ImGuiLayer::ShowSceneViewport()
 			m_viewportSizeX = crtSizeX;
 			m_viewportSizeY = crtSizeY;
 
-			sl::RenderCore::GetMainFrameBuffer()->Resize(m_viewportSizeX, m_viewportSizeY);
+			sl::RenderCore::GetMainFrameBuffer()->Resize(m_viewportSizeX, m_viewportSizeY); 
 		}
 	}
 
+	// The invisible button is designed to prevent the mouse from hovering over the ui item
+	// even when the camera is moving, using an internal imgui mechanism.
+	// I haven't come up with a better solution, but it just works.
+	ImVec2 pos = ImGui::GetCursorPos();
+	ImGui::InvisibleButton("SceneViewport", ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY },
+			ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+	ImGui::SetCursorPos(pos);
+
+	// Draw main frame buffer color attachment
 	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();
 	ImGui::Image((void *)(uint64_t)handle, ImVec2{ (float)m_viewportSizeX, (float)m_viewportSizeY }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 

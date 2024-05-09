@@ -67,14 +67,22 @@ void Window::SetVSync(bool VSync)
 #endif
 }
 
-void Window::CaptureCursor() const
+void Window::CaptureCursor()
 {
-	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	if (!m_isCursorCaptured)
+	{
+		glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		m_isCursorCaptured = true;
+	}
 }
 
-void Window::ReleaseCursor() const
+void Window::ReleaseCursor()
 {
-	glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	if (m_isCursorCaptured)
+	{
+		glfwSetInputMode(static_cast<GLFWwindow *>(m_pNativeWindow), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		m_isCursorCaptured = false;
+	}
 }
 
 void Window::SetCallbacks()

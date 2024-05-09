@@ -33,14 +33,13 @@ public:
 	bool &GetIsVSync() { return m_isVSync; }
 	bool GetIsVSync() const { return m_isVSync; }
 
-	void CaptureCursor() const;
-	void ReleaseCursor() const;
+	void CaptureCursor();
+	void ReleaseCursor();
 
 	void SetEventCallback(EventCallback fun) { m_eventCallback = std::move(fun); }
 	void DespatchEvent(Event &event) { m_eventCallback(event); }
 
 private:
-
 	void SetCallbacks();
 
 	void *m_pNativeWindow = nullptr;
@@ -50,6 +49,7 @@ private:
 	uint32_t m_width = 1280;
 	uint32_t m_height = 720;
 	bool m_isVSync = true;
+	bool m_isCursorCaptured = false;
 
 	EventCallback m_eventCallback = nullptr;
 };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Defines.h"
 #include "Event/Event.h"
 
 #include <nameof/nameof.hpp>
@@ -9,21 +10,14 @@
 namespace sl
 {
 
-enum class CameraControllerMode : uint8_t
-{
-	None,
-	FPS,
-	Editor,
-};
-
-class CameraControllerEvent : public Event
+class CameraActivateEvent : public Event
 {
 public:
-	CameraControllerEvent(CameraControllerMode mode) : m_mode(mode) {}
+	CameraActivateEvent(CameraControllerMode mode) : m_mode(mode) {}
 
 	static EventType GetStaticEventType()
 	{
-		return EventType::CameraController;
+		return EventType::CameraActivate;
 	}
 
 	virtual EventType GetEventType() const override
@@ -34,7 +28,7 @@ public:
 	virtual std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "CameraControllerMode: " << nameof::nameof_enum(m_mode);
+		ss << "CameraActivate, mode: " << nameof::nameof_enum(m_mode);
 		return ss.str();
 	}
 
@@ -47,6 +41,30 @@ public:
 
 private:
 	CameraControllerMode m_mode;
+};
+
+class CameraDeactivateEvent : public Event
+{
+public:
+	static EventType GetStaticEventType()
+	{
+		return EventType::CameraDeactivate;
+	}
+
+	virtual EventType GetEventType() const override
+	{
+		return GetStaticEventType();
+	}
+
+	virtual std::string ToString() const override
+	{
+		return "CameraDeactivate";
+	}
+
+	virtual uint8_t GetCategories() const override
+	{
+		return SL_EVENT_CATEGORY_CAMERA;
+	}
 };
 
 } // namespace sl

@@ -14,7 +14,7 @@ enum class EventType
 	KeyPress, KeyRelease, KeyType,
 	MouseButtonPress, MouseButtonRelease, MouseMove, MouseScroll,
 	SceneViewportResize, SceneViewportGetFocus, SceneViewportLostFocus, SceneViewportHover,
-	CameraController,
+	CameraActivate, CameraDeactivate,
 };
 
 #define SL_EVENT_CATEGORY_NONE           UINT8_C(0x00)
