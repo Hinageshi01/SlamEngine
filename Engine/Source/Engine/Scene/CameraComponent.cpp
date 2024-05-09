@@ -17,8 +17,9 @@ void CameraComponent::Reset()
 	m_orthoSize = 10.0f;
 	m_orthoNearClip = -10.0f;
 	m_orthoFarClip = 10.0f;
-	m_rotateSpeed = glm::radians(0.05f);
-	m_maxMoveSpeed = 0.016f;
+	m_rotateSpeed = glm::radians(0.04f);
+	m_maxMoveSpeed = 0.015f;
+	m_maxSpeedToAcceleration = 0.004f;
 	m_moveSpeedKeyShiftMultiplier = 4.0f;
 	m_moveSpeedMouseScrollMultiplier = 1.0f;
 	m_isDirty = true;

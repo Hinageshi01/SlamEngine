@@ -17,7 +17,6 @@ enum class ProjectionType : uint8_t
 struct CameraComponent
 {
 	static constexpr glm::vec3 WorldUp = { 0.0f, 1.0f, 0.0f };
-	static constexpr float MaxSpeedToAcceleration = 1.0f / 250.0f;
 
 	void Reset();
 
@@ -28,7 +27,7 @@ struct CameraComponent
 
 	ProjectionType m_projectionType = ProjectionType::Perspective;
 
-	// Perspective  datas
+	// Perspective datas
 	float m_aspect = 1920.0f / 1080.0f;
 	float m_fov = glm::radians(45.0f); // Stores in radians
 	float m_fovMultiplier = 1.0f;
@@ -41,8 +40,10 @@ struct CameraComponent
 	float m_orthoFarClip = 10.0f;
 
 	// Camera Controller datas
-	float m_rotateSpeed = glm::radians(0.05f);
-	float m_maxMoveSpeed = 0.016f;
+	float m_rotateSpeed = glm::radians(0.04f);
+
+	float m_maxMoveSpeed = 0.015f;
+	float m_maxSpeedToAcceleration = 0.004f;
 	float m_acceleration = 0.0f;
 	float m_moveSpeed = 0.0f;
 

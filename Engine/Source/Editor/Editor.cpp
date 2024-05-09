@@ -3,7 +3,6 @@
 #include "Core/Log.h"
 #include "Event/CameraEvent.h"
 #include "Event/MouseEvent.h"
-#include "Event/SceneViewportEvent.h"
 #include "Event/WindowEvent.h"
 #include "ImGui/ImGuiContext.h"
 #include "Layer/LayerStack.h"
@@ -153,6 +152,8 @@ bool Editor::OnWindowResize(sl::WindowResizeEvent &event)
 
 	return true;
 }
+
+// TODO: Move these to Window layer
 
 bool Editor::OnCameraActivate(sl::CameraActivateEvent &event)
 {

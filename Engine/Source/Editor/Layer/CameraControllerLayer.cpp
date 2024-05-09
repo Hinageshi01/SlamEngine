@@ -73,7 +73,6 @@ void CameraControllerLayer::UpdateMainCamera(float deltaTime)
 	}
 	else if(sl::CameraControllerMode::Editor == m_controllerMode)
 	{
-		m_controllerMode = sl::CameraControllerMode::Editor;
 		UpdateEditorCamera(deltaTime);
 	}
 }
@@ -103,9 +102,9 @@ void CameraControllerLayer::UpdateFPSCamera(float deltaTime)
 		camera.m_isDirty = true;
 	}
 
+	static_assert(8 >= CamraMoveKey.size());
 	uint8_t moveKeyMask = 0x00;
-	static_assert(6 == CamraMoveKey.size());
-	for (size_t i = 0; i < 6; ++i)
+	for (size_t i = 0; i < CamraMoveKey.size(); ++i)
 	{
 		if (sl::Input::IsKeyPressed(CamraMoveKey[i]))
 		{
@@ -119,7 +118,7 @@ void CameraControllerLayer::UpdateFPSCamera(float deltaTime)
 		if (!m_isMoving)
 		{
 			// When the camera starts to move.
-			camera.m_acceleration = camera.m_maxMoveSpeed * sl::CameraComponent::MaxSpeedToAcceleration;
+			camera.m_acceleration = camera.m_maxMoveSpeed * camera.m_maxSpeedToAcceleration;
 			m_isMoving = true;
 		}
 
@@ -154,7 +153,7 @@ void CameraControllerLayer::UpdateFPSCamera(float deltaTime)
 		if (m_isMoving)
 		{
 			// Stop moving
-			camera.m_acceleration = -camera.m_maxMoveSpeed * sl::CameraComponent::MaxSpeedToAcceleration;
+			camera.m_acceleration = -camera.m_maxMoveSpeed * camera.m_maxSpeedToAcceleration;
 			m_isMoving = false;
 		}
 		finalMoveDir = camera.m_lastMoveDir;

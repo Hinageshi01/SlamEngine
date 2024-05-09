@@ -384,9 +384,8 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 		// Draw component menu button
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		ImGui::SameLine();
-		if (AlignButton(" : ", 1.0f, 6.0f))
+		if (AlignButton(" : ", 1.0f, ImGui::GetStyle().WindowPadding.x / 2.0f))
 		{
-			// Hard code 6.0f here to align to window's right side
 			ImGui::OpenPopup("ComponentPopup");
 		}
 		ImGui::PopStyleColor();
@@ -401,7 +400,7 @@ void ImGuiLayer::DrawComponent(const char *label, Fun uiFunction)
 				{
 					if (auto pCamera = m_selectedEntity.TryGetComponent<sl::CameraComponent>(); pCamera)
 					{
-						pCamera->m_isDirty;
+						pCamera->m_isDirty = true;
 					}
 				}
 			}
@@ -572,20 +571,20 @@ void ImGuiLayer::ShowDetails()
 
 			float fovDegrees = glm::degrees(pComponent->m_fov);
 			StartWithText("FOV");
-			if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f, 1.0f, 120.0f))
+			if (ImGui::DragFloat("##FOV", &fovDegrees, 0.1f, 1.0f, 180.0f))
 			{
 				pComponent->m_fov = glm::radians(fovDegrees);
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Near Plane");
-			if (ImGui::DragFloat("##NearPlane", &(pComponent->m_nearPlane), 0.1f, 0.001f, 100000.0f))
+			if (ImGui::DragFloat("##NearPlane", &(pComponent->m_nearPlane), 0.001f, 0.001f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Far Plane");
-			if (ImGui::DragFloat("##FarPlane", &(pComponent->m_farPlane), 0.1f, 0.001f, 100000.0f))
+			if (ImGui::DragFloat("##FarPlane", &(pComponent->m_farPlane), 1.0f, 0.001f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
@@ -599,19 +598,19 @@ void ImGuiLayer::ShowDetails()
 			ImGui::Indent();
 
 			StartWithText("Size");
-			if (ImGui::DragFloat("##Size", &(pComponent->m_orthoSize), 0.1f, 0.001f, 100000.0f))
+			if (ImGui::DragFloat("##Size", &(pComponent->m_orthoSize), 0.1f, 0.1f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Near Clip");
-			if (ImGui::DragFloat("##NearClip", &(pComponent->m_orthoNearClip), 0.1f), -100000.0f, 100000.0f)
+			if (ImGui::DragFloat("##NearClip", &(pComponent->m_orthoNearClip), 0.1f, -100000.0f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
 
 			StartWithText("Far Clip");
-			if (ImGui::DragFloat("##FarClip", &(pComponent->m_orthoFarClip), 0.1f), -100000.0f, 100000.0f)
+			if (ImGui::DragFloat("##FarClip", &(pComponent->m_orthoFarClip), 0.1f, -100000.0f, 100000.0f))
 			{
 				pComponent->m_isDirty = true;
 			}
@@ -626,29 +625,22 @@ void ImGuiLayer::ShowDetails()
 
 			float rotateSpeedDegrees = glm::degrees(pComponent->m_rotateSpeed);
 			StartWithText("Rotate Speed");
-			if (ImGui::DragFloat("##RotateSpeed", &rotateSpeedDegrees, 0.001f), 0.0001f, 1.0f)
+			if (ImGui::DragFloat("##RotateSpeed", &rotateSpeedDegrees, 0.001f, 0.001f, 1.0f))
 			{
-				pComponent->m_isDirty = true;
 				pComponent->m_rotateSpeed = glm::radians(rotateSpeedDegrees);
 			}
 
 			StartWithText("Move Speed");
-			if (ImGui::DragFloat("##MoveSpeed", &(pComponent->m_maxMoveSpeed), 0.001f), 0.0001f, 1.0f)
-			{
-				pComponent->m_isDirty = true;
-			}
+			ImGui::DragFloat("##MoveSpeed", &(pComponent->m_maxMoveSpeed), 0.001f, 0.001f, 1.0f);
+
+			StartWithText("Acceleration");
+			ImGui::DragFloat("##Acceleration", &(pComponent->m_maxSpeedToAcceleration), 0.001f, 0.001f, 1.0f);
 
 			StartWithText("Shift Multiplier");
-			if (ImGui::DragFloat("##ShiftMultiplier", &(pComponent->m_moveSpeedKeyShiftMultiplier), 0.1f), 0.1f, 10.0f)
-			{
-				pComponent->m_isDirty = true;
-			}
+			ImGui::DragFloat("##ShiftMultiplier", &(pComponent->m_moveSpeedKeyShiftMultiplier), 0.1f, 0.1f, 10.0f);
 
 			StartWithText("Scroll Multiplier");
-			if (ImGui::DragFloat("##ScrollMultiplier", &(pComponent->m_moveSpeedMouseScrollMultiplier), 0.1f), 0.1f, 10.0f)
-			{
-				pComponent->m_isDirty = true;
-			}
+			ImGui::DragFloat("##ScrollMultiplier", &(pComponent->m_moveSpeedMouseScrollMultiplier), 0.1f, 0.1f, 10.0f);
 
 			ImGui::Unindent();
 		}
@@ -700,22 +692,6 @@ void ImGuiLayer::ShowSceneViewport()
 			}
 		}
 
-		// Focus event
-		if (bool crtFocus = ImGui::IsWindowFocused(); crtFocus != m_isSceneViewportFocused)
-		{
-			if (crtFocus)
-			{
-				sl::SceneViewportGetFocusEvent event;
-				m_eventCallback(event);
-			}
-			else
-			{
-				sl::SceneViewportLostFocusEvent event;
-				m_eventCallback(event);
-			}
-			m_isSceneViewportFocused = crtFocus;
-		}
-
 		// Resize event
 		auto crtSize = ImGui::GetContentRegionAvail();
 		uint32_t crtSizeX = (uint32_t)crtSize.x;
@@ -728,7 +704,7 @@ void ImGuiLayer::ShowSceneViewport()
 			m_viewportSizeX = crtSizeX;
 			m_viewportSizeY = crtSizeY;
 
-			sl::RenderCore::GetMainFrameBuffer()->Resize(m_viewportSizeX, m_viewportSizeY); 
+			sl::RenderCore::GetMainFrameBuffer()->Resize(m_viewportSizeX, m_viewportSizeY);
 		}
 	}
 

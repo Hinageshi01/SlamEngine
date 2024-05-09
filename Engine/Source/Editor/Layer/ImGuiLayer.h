@@ -62,7 +62,6 @@ private:
 	// Scene viewport
 	uint32_t m_viewportSizeX = 0;
 	uint32_t m_viewportSizeY = 0;
-	bool m_isSceneViewportFocused = false;
 	
 	sl::EventCallback m_eventCallback;
 };
