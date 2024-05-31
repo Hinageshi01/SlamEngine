@@ -22,7 +22,10 @@ public:
 	virtual uint32_t GetWidth() const = 0;
 	virtual uint32_t GetHeight() const = 0;
 
-	virtual uint32_t GetColorAttachmentHandle(size_t i = 0) const = 0;
+	virtual void Clear(uint32_t attachmentIndex, const void *pClearData) const = 0;
+	virtual int ReadPixel(uint32_t attachmentIndex, uint32_t x, uint32_t y) = 0;
+
+	virtual uint32_t GetAttachmentHandle(size_t i = 0) const = 0;
 };
 
 } // namespace sl

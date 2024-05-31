@@ -3,6 +3,7 @@
 #include "Core/Log.h"
 #include "Scene/CameraComponent.h"
 #include "Scene/CornerstoneComponent.h"
+#include "Scene/EntityIDComponent.h"
 #include "Scene/RenderingComponent.h"
 #include "Scene/TagComponent.h"
 #include "Scene/TransformComponent.h"

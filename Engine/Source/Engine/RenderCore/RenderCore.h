@@ -24,9 +24,12 @@ public:
 	static uint32_t GetMaxFramebufferSize() { return m_info.m_maxFramebufferSize; }
 	static uint32_t GetMaxFramebufferColorAttachmentCount() { return m_info.m_maxFramebufferColorAttachmentCount; }
 
-	static void SetMainFrameBuffer(FrameBuffer *pBuffer) { m_pMainFrameBuffer = pBuffer; }
-	static FrameBuffer *GetMainFrameBuffer() { return m_pMainFrameBuffer; }
+	static void SetMainFramebuffer(FrameBuffer *pBuffer) { m_pMainFrameBuffer = pBuffer; }
+	static FrameBuffer *GetMainFramebuffer() { return m_pMainFrameBuffer; }
 
+	static void SetEntityIDFramebuffer(FrameBuffer *pBuffer) { m_pEntityIDFrameBuffer = pBuffer; }
+	static FrameBuffer *GetEntityIDFramebuffer() { return m_pEntityIDFrameBuffer; }
+	
 	static void SetDefaultState();
 
 	static void ClearColor(float r, float g, float b, float a);
@@ -46,6 +49,7 @@ private:
 	inline static BackendInfo m_info = {};
 
 	inline static FrameBuffer *m_pMainFrameBuffer = nullptr;
+	inline static FrameBuffer *m_pEntityIDFrameBuffer = nullptr;
 };
 
 } // namespace sl

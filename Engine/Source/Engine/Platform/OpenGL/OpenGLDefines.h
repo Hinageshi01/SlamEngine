@@ -86,65 +86,65 @@ inline constexpr GLenum GLInternalTextureFormat[nameof::enum_count<TextureFormat
 
 inline constexpr GLenum GLTextureFormat[nameof::enum_count<TextureFormat>()] =
 {
-	GL_RED,          // TextureFormat::R8
-	GL_RED,          // TextureFormat::R8S
-	GL_RED,          // TextureFormat::R8U
-	GL_RED,          // TextureFormat::R8I
-	GL_RED,          // TextureFormat::R16
-	GL_RED,          // TextureFormat::R16S
-	GL_RED,          // TextureFormat::R16U
-	GL_RED,          // TextureFormat::R16I
-	GL_RED,          // TextureFormat::R16F
-	GL_RED,          // TextureFormat::R32U
-	GL_RED,          // TextureFormat::R32I
-	GL_RED,          // TextureFormat::R32F
+	GL_RED,             // TextureFormat::R8
+	GL_RED,             // TextureFormat::R8S
+	GL_RED,             // TextureFormat::R8U
+	GL_RED,             // TextureFormat::R8I
+	GL_RED,             // TextureFormat::R16
+	GL_RED,             // TextureFormat::R16S
+	GL_RED,             // TextureFormat::R16U
+	GL_RED,             // TextureFormat::R16I
+	GL_RED,             // TextureFormat::R16F
+	GL_RED,             // TextureFormat::R32U
+	GL_RED,             // TextureFormat::R32I
+	GL_RED,             // TextureFormat::R32F
 
-	GL_RG,           // TextureFormat::RG8
-	GL_RG,           // TextureFormat::RG8S
-	GL_RG,           // TextureFormat::RG8U
-	GL_RG,           // TextureFormat::RG8I
-	GL_RG,           // TextureFormat::RG16
-	GL_RG,           // TextureFormat::RG16S
-	GL_RG,           // TextureFormat::RG16U
-	GL_RG,           // TextureFormat::RG16I
-	GL_RG,           // TextureFormat::RG16F
-	GL_RG,           // TextureFormat::RG32U
-	GL_RG,           // TextureFormat::RG32I
-	GL_RG,           // TextureFormat::RG32F
+	GL_RG,              // TextureFormat::RG8
+	GL_RG,              // TextureFormat::RG8S
+	GL_RG,              // TextureFormat::RG8U
+	GL_RG,              // TextureFormat::RG8I
+	GL_RG,              // TextureFormat::RG16
+	GL_RG,              // TextureFormat::RG16S
+	GL_RG,              // TextureFormat::RG16U
+	GL_RG,              // TextureFormat::RG16I
+	GL_RG,              // TextureFormat::RG16F
+	GL_RG,              // TextureFormat::RG32U
+	GL_RG,              // TextureFormat::RG32I
+	GL_RG,              // TextureFormat::RG32F
 
-	GL_RGB,          // TextureFormat::RGB8
-	GL_RGB,          // TextureFormat::RGB8S
-	GL_RGB,          // TextureFormat::RGB8U
-	GL_RGB,          // TextureFormat::RGB8I
-	GL_RGB,          // TextureFormat::RGB16
-	GL_RGB,          // TextureFormat::RGB16S
-	GL_RGB,          // TextureFormat::RGB16U
-	GL_RGB,          // TextureFormat::RGB16I
-	GL_RGB,          // TextureFormat::RGB16F
-	GL_RGB,          // TextureFormat::RGB32U
-	GL_RGB,          // TextureFormat::RGB32I
-	GL_RGB,          // TextureFormat::RGB32F
+	GL_RGB,             // TextureFormat::RGB8
+	GL_RGB,             // TextureFormat::RGB8S
+	GL_RGB,             // TextureFormat::RGB8U
+	GL_RGB,             // TextureFormat::RGB8I
+	GL_RGB,             // TextureFormat::RGB16
+	GL_RGB,             // TextureFormat::RGB16S
+	GL_RGB,             // TextureFormat::RGB16U
+	GL_RGB,             // TextureFormat::RGB16I
+	GL_RGB,             // TextureFormat::RGB16F
+	GL_RGB,             // TextureFormat::RGB32U
+	GL_RGB,             // TextureFormat::RGB32I
+	GL_RGB,             // TextureFormat::RGB32F
 
-	GL_RGBA,         // TextureFormat::RGBA8
-	GL_RGBA,         // TextureFormat::RGBA8S
-	GL_RGBA,         // TextureFormat::RGBA8U
-	GL_RGBA,         // TextureFormat::RGBA8I
-	GL_RGBA,         // TextureFormat::RGBA16
-	GL_RGBA,         // TextureFormat::RGBA16S
-	GL_RGBA,         // TextureFormat::RGBA16U
-	GL_RGBA,         // TextureFormat::RGBA16I
-	GL_RGBA,         // TextureFormat::RGBA16F
-	GL_RGBA,         // TextureFormat::RGBA32U
-	GL_RGBA,         // TextureFormat::RGBA32I
-	GL_RGBA,         // TextureFormat::RGBA32F
+	GL_RGBA,            // TextureFormat::RGBA8
+	GL_RGBA,            // TextureFormat::RGBA8S
+	GL_RGBA,            // TextureFormat::RGBA8U
+	GL_RGBA,            // TextureFormat::RGBA8I
+	GL_RGBA,            // TextureFormat::RGBA16
+	GL_RGBA,            // TextureFormat::RGBA16S
+	GL_RGBA,            // TextureFormat::RGBA16U
+	GL_RGBA,            // TextureFormat::RGBA16I
+	GL_RGBA,            // TextureFormat::RGBA16F
+	GL_RGBA,            // TextureFormat::RGBA32U
+	GL_RGBA,            // TextureFormat::RGBA32I
+	GL_RGBA,            // TextureFormat::RGBA32F
 
-	GL_INVALID_ENUM, // TextureFormat::D16
-	GL_INVALID_ENUM, // TextureFormat::D24
-	GL_INVALID_ENUM, // TextureFormat::D32F
-	GL_INVALID_ENUM, // TextureFormat::D32
-	GL_INVALID_ENUM, // TextureFormat::D24S8
-	GL_INVALID_ENUM, // TextureFormat::D32FS8
-	GL_INVALID_ENUM, // TextureFormat::S8
+	GL_DEPTH_COMPONENT, // TextureFormat::D16
+	GL_DEPTH_COMPONENT, // TextureFormat::D24
+	GL_DEPTH_COMPONENT, // TextureFormat::D32F
+	GL_DEPTH_COMPONENT, // TextureFormat::D32
+	GL_DEPTH_STENCIL,   // TextureFormat::D24S8
+	GL_DEPTH_STENCIL,   // TextureFormat::D32FS8
+	GL_STENCIL_INDEX,   // TextureFormat::S8
 };
 
 inline constexpr GLenum GLDataType[nameof::enum_count<TextureFormat>()] =
@@ -212,10 +212,10 @@ inline constexpr GLenum GLDataType[nameof::enum_count<TextureFormat>()] =
 
 inline constexpr GLenum GLAttachmentPoint[nameof::enum_count<AttachmentType>()] =
 {
-	GL_DEPTH_ATTACHMENT,		 // AttachmentType::Depth
-	GL_DEPTH_STENCIL_ATTACHMENT, // AttachmentType::Stencil
-	GL_STENCIL_ATTACHMENT,		 // AttachmentType::DepthAndStencil
 	GL_COLOR_ATTACHMENT0,		 // AttachmentType::Color
+	GL_DEPTH_ATTACHMENT,		 // AttachmentType::Depth
+	GL_STENCIL_ATTACHMENT,		 // AttachmentType::DepthAndStencil
+	GL_DEPTH_STENCIL_ATTACHMENT, // AttachmentType::Stencil
 };
 
 inline constexpr GLenum GLShaderType[nameof::enum_count<ShaderType>()] =

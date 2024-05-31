@@ -31,10 +31,10 @@ enum class AttribType : uint8_t
 
 enum class TextureFormat : uint8_t
 {
-	R8,  // Unsigned normalized integer
-	R8S, // Signed normalized integer
-	R8U, // Unsigned integer
-	R8I, // Signed integer
+	R8 = 0,  // Unsigned normalized integer
+	R8S,     // Signed normalized integer
+	R8U,     // Unsigned integer
+	R8I,     // Signed integer
 	R16,
 	R16S,
 	R16U,
@@ -96,29 +96,36 @@ enum class TextureFormat : uint8_t
 
 enum class AttachmentType : uint8_t
 {
-	Depth,
-	Stencil,
-	DepthAndStencil,
 	Color,
+	Depth,
+	DepthAndStencil,
+	Stencil,
 };
 
 inline AttachmentType GetAttachmentType(TextureFormat format)
 {
-	if (format == TextureFormat::D16 || format == TextureFormat::D24 || format == TextureFormat::D32 || format == TextureFormat::D32F)
+	switch (format)
 	{
-		return AttachmentType::Depth;
-	}
-	else if (format == TextureFormat::D24S8 || format == TextureFormat::D32FS8)
-	{
-		return AttachmentType::DepthAndStencil;
-	}
-	else if (format == TextureFormat::S8)
-	{
-		return AttachmentType::Stencil;
-	}
-	else
-	{
-		return AttachmentType::Color;
+		case TextureFormat::D16:
+		case TextureFormat::D24:
+		case TextureFormat::D32:
+		case TextureFormat::D32F:
+		{
+			return AttachmentType::Depth;
+		}
+		case TextureFormat::D24S8:
+		case TextureFormat::D32FS8:
+		{
+			return AttachmentType::DepthAndStencil;
+		}
+		case TextureFormat::S8:
+		{
+			return AttachmentType::Stencil;
+		}
+		default:
+		{
+			return AttachmentType::Color;
+		}
 	}
 }
 

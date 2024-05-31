@@ -96,10 +96,10 @@ struct ScrollingBuffer
 	}
 };
 
-SL_FORCEINLINE static float GetTitleBarSize(bool runtime = false)
+SL_FORCEINLINE static float GetTitleBarSize()
 {
 	static float s_size = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
-	return runtime ? (ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f) : s_size;
+	return s_size;
 }
 
 SL_FORCEINLINE static void RightClickFocus()
@@ -788,6 +788,16 @@ void ImGuiLayer::ShowDetails()
 		}
 	});
 
+	// Draw entity ID component
+	DrawComponent<sl::EntityIDComponent>("Entity ID", [this](auto *pComponent)
+	{
+		StartWithText("Shader");
+		if (auto *pShader = pComponent->m_pShader; pShader)
+		{
+			ImGui::Text(pShader->GetName().c_str());
+		}
+	});
+
 	// Draw Cornerstone component
 	DrawComponent<sl::CornerstoneComponent>("Cornerstone", [this](auto *pComponent)
 	{
@@ -817,34 +827,55 @@ void ImGuiLayer::ShowSceneViewport()
 	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 	ImGui::PopStyleVar();
 
-	ImVec2 windowPos = ImGui::GetWindowPos();
-	m_sceneViewportWindowPosX = (uint32_t)windowPos.x;
-	m_sceneViewportWindowPosY = (uint32_t)windowPos.y;
+	m_sceneViewportWindowPosX = (uint32_t)ImGui::GetWindowPos().x;
+	m_sceneViewportWindowPosY = (uint32_t)ImGui::GetWindowPos().y;
 
 	// Resize event
-	ImVec2 crtSceneViewportSize = ImGui::GetContentRegionAvail();
-	uint32_t crtSizeX = (uint32_t)crtSceneViewportSize.x;
-	uint32_t crtSizeY = (uint32_t)crtSceneViewportSize.y;
-	if (crtSizeX != m_sceneViewportSizeX || crtSizeY != m_sceneViewportSizeY)
+	uint32_t crtSceneViewportSizeX = (uint32_t)ImGui::GetContentRegionAvail().x;
+	uint32_t crtSceneViewportSizeY = (uint32_t)ImGui::GetContentRegionAvail().y;
+	if (crtSceneViewportSizeX != m_sceneViewportSizeX || crtSceneViewportSizeY != m_sceneViewportSizeY)
 	{
-		sl::SceneViewportResizeEvent event{ crtSizeX , crtSizeY };
+		m_sceneViewportSizeX = crtSceneViewportSizeX;
+		m_sceneViewportSizeY = crtSceneViewportSizeY;
+
+		sl::SceneViewportResizeEvent event{ m_sceneViewportSizeX , m_sceneViewportSizeY };
 		m_eventCallback(event);
 
-		sl::RenderCore::GetMainFrameBuffer()->Resize(crtSizeX, crtSizeY);
+		// TODO: Move them to RenerLayer OnEnvent
+		sl::RenderCore::GetMainFramebuffer()->Resize(m_sceneViewportSizeX, m_sceneViewportSizeY);
+		sl::RenderCore::GetEntityIDFramebuffer()->Resize(m_sceneViewportSizeX, m_sceneViewportSizeY);
+	}
 
-		m_sceneViewportSizeX = crtSizeX;
-		m_sceneViewportSizeY = crtSizeY;
+	// Mouse pick
+	{
+		// Origin is on the upper left.
+		uint32_t mouseLocalPosX = (uint32_t)ImGui::GetMousePos().x - m_sceneViewportWindowPosX;
+		uint32_t mouseLocalPosY = (uint32_t)ImGui::GetMousePos().y - (m_sceneViewportWindowPosY + (uint32_t)GetTitleBarSize());
+
+		// When mouse within the scene viewport range.
+		if (mouseLocalPosX >= 0 && mouseLocalPosY >= 0 && mouseLocalPosX < m_sceneViewportSizeX && mouseLocalPosY < m_sceneViewportSizeY)
+		{
+			// if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			{
+				auto *pEntityIDFB = sl::RenderCore::GetEntityIDFramebuffer();
+				pEntityIDFB->Bind();
+				int id = pEntityIDFB->ReadPixel(0, mouseLocalPosX, mouseLocalPosY);
+
+				SL_ENGINE_DEBUG("Mouse Clicked: ({}, {}), enttiy ID: {}", mouseLocalPosX, mouseLocalPosY, id);
+			}
+		}
 	}
 
 	// Draw main frame buffer color attachment
-	uint32_t handle = sl::RenderCore::GetMainFrameBuffer()->GetColorAttachmentHandle();
-	ImGui::Image((void *)(uint64_t)handle, crtSceneViewportSize, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+	uint32_t handle = sl::RenderCore::GetMainFramebuffer()->GetAttachmentHandle(0);
+	ImGui::Image((void *)(uint64_t)handle, ImGui::GetContentRegionAvail(), ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
+	// ImGuizmo
 	ShowImGuizmoTransform();
 
+	// Camera controller mode and window focus
 	if (ImGui::IsWindowHovered() && !ImGuizmo::IsOver())
 	{
-		// Camera event
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 		{
 			ImGui::SetWindowFocus();
@@ -859,6 +890,7 @@ void ImGuiLayer::ShowSceneViewport()
 			}
 		}
 	}
+
 	ImGui::End();
 }
 

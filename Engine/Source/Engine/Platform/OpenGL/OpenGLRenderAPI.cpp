@@ -19,8 +19,8 @@ BackendInfo OpenGLRenderAPI::GetBackendInfo()
 	glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxFramebufferSize);
 	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxFramebufferColorAttachmentCount);
 	
-	info.m_maxTextureSize = maxTextureSize;
-	info.m_maxFramebufferSize = maxFramebufferSize;
+	info.m_maxTextureSize = (uint32_t)maxTextureSize;
+	info.m_maxFramebufferSize = (uint32_t)maxFramebufferSize;
 	info.m_maxFramebufferColorAttachmentCount = (uint32_t)maxFramebufferColorAttachmentCount;
 
 	return info;

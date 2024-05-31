@@ -13,10 +13,7 @@ namespace sl
 OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool destroy) :
 	m_destroyTextureWithFramebuffer(destroy)
 {
-	SL_ENGINE_ASSERT_INFO(!textures.empty(), "Can not create framebuffer without a texture!");
-
-	bool hasColor = false;
-	bool isDifferent = false;
+	SL_ENGINE_ASSERT_INFO(!textures.empty(), "Can not create framebuffer without any textures!");
 
 	uint32_t minWidth = textures[0]->GetHeight();
 	uint32_t minHeight = textures[0]->GetHeight();
@@ -30,13 +27,11 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 
 		if (AttachmentType::Color == type)
 		{
-			hasColor = true;
 			attachmentPoint += colorAttachmentIndex++;
 
 			SL_ENGINE_ASSERT_INFO(attachmentPoint < GL_COLOR_ATTACHMENT0 + RenderCore::GetMaxFramebufferColorAttachmentCount(),
 				"Color attachments count exceeds the limit!");
 		}
-		SL_ENGINE_ASSERT_INFO(hasColor, "Can not create framebuffer without a color attachment!");
 
 		m_attachments.emplace_back(pTexture, attachmentPoint);
 
@@ -44,29 +39,33 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(std::vector<Texture2D *> textures, bool des
 		uint32_t textureHeight = pTexture->GetHeight();
 		if (minWidth != textureWidth || minHeight != textureHeight)
 		{
-			isDifferent = true;
 			minWidth = std::min(minWidth, textureWidth);
 			minHeight = std::min(minHeight, textureHeight);
+
+			SL_ENGINE_WARN("Creating framebuffer with textures of different sizes, shrink to the minimal one: ({}, {})", minWidth, minHeight);
 		}
 	}
-	if (isDifferent)
-	{
-		SL_ENGINE_WARN("Creating framebuffer with textures of different sizes, shrink to the minimal one.");
-	}
+	SL_ENGINE_ASSERT_INFO(colorAttachmentIndex, "Can not create framebuffer without any color attachments!");
 
 	m_width = minWidth;
 	m_height = minHeight;
+	m_colorAttachmentCount = colorAttachmentIndex;
+
 	Create();
 }
 
 OpenGLFrameBuffer::~OpenGLFrameBuffer()
 {
-	glDeleteFramebuffers(1, &m_handle);
-	for (auto &attachment : m_attachments)
+	if (m_destroyTextureWithFramebuffer)
 	{
-		delete attachment.pTexture;
+		for (auto &attachment : m_attachments)
+		{
+			delete attachment.m_pTexture;
+		}
+		m_attachments.clear();
 	}
-	m_attachments.clear();
+	
+	glDeleteFramebuffers(1, &m_handle);
 }
 
 void OpenGLFrameBuffer::Bind() const
@@ -95,7 +94,7 @@ void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 
 	for (auto &attachment : m_attachments)
 	{
-		attachment.pTexture->Resize(width, height);
+		attachment.m_pTexture->Resize(width, height);
 	}
 
 	glDeleteFramebuffers(1, &m_handle);
@@ -106,9 +105,28 @@ void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 	Create();
 }
 
-uint32_t OpenGLFrameBuffer::GetColorAttachmentHandle(size_t i) const
+void OpenGLFrameBuffer::Clear(uint32_t attachmentIndex, const void *pClearData) const
 {
-	return m_attachments.at(i).pTexture->GetHandle();
+	SL_ENGINE_ASSERT_INFO(attachmentIndex < m_attachments.size(), "Attachment index out of range!");
+
+	m_attachments.at(attachmentIndex).m_pTexture->Clear(pClearData);
+}
+
+int OpenGLFrameBuffer::ReadPixel(uint32_t colorAttachmentIndex, uint32_t x, uint32_t y)
+{
+	SL_ENGINE_ASSERT_INFO(colorAttachmentIndex < m_colorAttachmentCount, "Color attachment index out of range!");
+
+	int data;
+	//glNamedFramebufferReadBuffer(m_handle, GL_COLOR_ATTACHMENT0 + colorAttachmentIndex);
+	glReadBuffer(GL_COLOR_ATTACHMENT0 + colorAttachmentIndex);
+	glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &data);
+	
+	return data;
+}
+
+uint32_t OpenGLFrameBuffer::GetAttachmentHandle(size_t i) const
+{
+	return m_attachments.at(i).m_pTexture->GetHandle();
 }
 
 void OpenGLFrameBuffer::Create()
@@ -124,7 +142,20 @@ void OpenGLFrameBuffer::Create()
 	for (const auto &attachment : m_attachments)
 	{
 		// TODO: Parameterise the 3 and last parameter.
-		glFramebufferTexture2D(GL_FRAMEBUFFER, attachment.point, GL_TEXTURE_2D, attachment.pTexture->GetHandle(), 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, attachment.m_point, GL_TEXTURE_2D, attachment.m_pTexture->GetHandle(), 0);
+	}
+
+	// MRT
+	if (m_colorAttachmentCount > 1)
+	{
+		std::vector<GLenum> buffers;
+		buffers.reserve(m_colorAttachmentCount);
+		for (uint32_t i = 0; i < m_colorAttachmentCount; ++i)
+		{
+			buffers.emplace_back(GL_COLOR_ATTACHMENT0 + i);
+		}
+
+		glNamedFramebufferDrawBuffers(m_handle, m_colorAttachmentCount, buffers.data());
 	}
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)

@@ -34,18 +34,26 @@ SandboxLayer::SandboxLayer()
 	pVertexArray->SetVertexBuffer(pVertexBuffer);
 	pVertexArray->SetIndexBuffer(pIndexBuffer);
 
-	sl::Shader *pShader = sl::Shader::Creat("Test Shader",
-		sl::Path::FromeAsset("Shader/vs_Test.glsl"),
-		sl::Path::FromeAsset("Shader/fs_Test.glsl"));
+	sl::Shader *pShader = sl::Shader::Creat("Base Shader",
+		sl::Path::FromeAsset("Shader/vs_Base.glsl"),
+		sl::Path::FromeAsset("Shader/fs_Base.glsl"));
+
+	sl::Shader *pEntityIDShader = sl::Shader::Creat("Entity ID Shader",
+		sl::Path::FromeAsset("Shader/vs_EntityID.glsl"),
+		sl::Path::FromeAsset("Shader/fs_EntityID.glsl"));
 
 	sl::TextureResource *pTextureResource = new sl::TextureResource{
 		sl::Path::FromeAsset("Texture/jc.png"), SL_SAMPLER_REPEAT | SL_SAMPLER_TRILINEAR };
 
 	auto entity = sl::ECSWorld::CreateEntity("Test Mesh");
+
 	auto &rendering = entity.AddComponent<sl::RenderingComponent>();
 	rendering.m_pVertexArray = pVertexArray;
 	rendering.m_pTextureResource = pTextureResource;
 	rendering.m_pShader = pShader;
+
+	auto &entityID = entity.AddComponent<sl::EntityIDComponent>();
+	entityID.m_pShader = pEntityIDShader;
 }
 
 SandboxLayer::~SandboxLayer()

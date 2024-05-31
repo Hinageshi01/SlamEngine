@@ -18,6 +18,7 @@ public:
 	virtual uint32_t GetHeight() const override { return m_height; }
 	virtual TextureFormat GetFormat() const  override { return m_format; }
 
+	virtual void Clear(const void *pClearData) const override;
 	virtual void Resize(uint32_t width, uint32_t height, const void *pData = nullptr) override;
 
 	virtual void Bind(uint32_t slot) const override;
