@@ -72,9 +72,9 @@ void RendererLayer::BasePass()
 void RendererLayer::EntityIDPass()
 {
 	sl::RenderCore::GetEntityIDFramebuffer()->Bind();
-	sl::RenderCore::ClearDepth(1.0f);
 	int entityIDClearData = -1;
 	sl::RenderCore::GetEntityIDFramebuffer()->Clear(0, &entityIDClearData);
+	sl::RenderCore::ClearDepth(1.0f);
 
 	auto view = sl::ECSWorld::GetRegistry().view<sl::RenderingComponent, sl::TransformComponent, sl::EntityIDComponent>();
 	for (auto entity : view)
@@ -89,7 +89,7 @@ void RendererLayer::EntityIDPass()
 		entityID.m_pShader->UploadUniform("u_modelViewProjection", m_viewProjectionCache * transform.GetTransform());
 		entityID.m_pShader->UploadUniform("u_entityID", (int)entity);
 
-		// Pending: Should we separate mesh data from RenderingComponent?
+		// PENDING: Should we separate mesh data from RenderingComponent?
 		sl::RenderCore::Submit(rendering.m_pVertexArray, entityID.m_pShader);
 	}
 
