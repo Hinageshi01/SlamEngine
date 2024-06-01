@@ -39,7 +39,9 @@ std::string LoadShaderFile(std::string_view path)
 OpenGLShader::OpenGLShader(std::string_view name, std::string_view vertexPath, std::string_view fragmentPath) :
 	m_shaderProgramName(name)
 {
-	SL_ENGINE_TRACE("Compiling standard shader program: \"{}\"", m_shaderProgramName.c_str());
+	SL_ENGINE_TRACE("Loading shader program: \"{}\"", m_shaderProgramName.c_str());
+	SL_ENGINE_TRACE("  VS: \"{}\"", vertexPath.data());
+	SL_ENGINE_TRACE("  FS: \"{}\"", fragmentPath.data());
 
 	m_programType = ShaderProgramType::Standard;
 	if (CompileShader(LoadShaderFile(vertexPath), ShaderType::VertexShader) &&
@@ -52,7 +54,8 @@ OpenGLShader::OpenGLShader(std::string_view name, std::string_view vertexPath, s
 OpenGLShader::OpenGLShader(std::string_view name, std::string_view computePath) :
 	m_shaderProgramName(name)
 {
-	SL_ENGINE_TRACE("Compiling compute shader program: \"{}\"", m_shaderProgramName.c_str());
+	SL_ENGINE_TRACE("Loading shader program: \"{}\"", m_shaderProgramName.c_str());
+	SL_ENGINE_TRACE("  CS: \"{}\"", computePath.data());
 
 	m_programType = ShaderProgramType::Compute;
 	if (CompileShader(LoadShaderFile(computePath), ShaderType::ComputeShader))

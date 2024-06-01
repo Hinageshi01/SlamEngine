@@ -34,11 +34,11 @@ SandboxLayer::SandboxLayer()
 	pVertexArray->SetVertexBuffer(pVertexBuffer);
 	pVertexArray->SetIndexBuffer(pIndexBuffer);
 
-	sl::Shader *pShader = sl::Shader::Creat("Base Shader",
+	sl::Shader *pShader = sl::Shader::Creat("Base",
 		sl::Path::FromeAsset("Shader/vs_Base.glsl"),
 		sl::Path::FromeAsset("Shader/fs_Base.glsl"));
 
-	sl::Shader *pEntityIDShader = sl::Shader::Creat("Entity ID Shader",
+	sl::Shader *pEntityIDShader = sl::Shader::Creat("EntityID",
 		sl::Path::FromeAsset("Shader/vs_EntityID.glsl"),
 		sl::Path::FromeAsset("Shader/fs_EntityID.glsl"));
 

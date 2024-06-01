@@ -39,6 +39,7 @@ class Entity final
 public:
 	Entity() = default;
 	Entity(entt::entity entity) : m_handle(entity) {}
+	Entity(uint32_t entity) : m_handle((entt::entity)entity) {}
 
 	void Reset() { m_handle = entt::null; }
 
@@ -113,6 +114,9 @@ public:
 	operator bool() const { return entt::null != m_handle; }
 	operator uint32_t() const{ return (uint32_t)m_handle; }
 	operator entt::entity() const { return m_handle; }
+
+	bool operator==(const uint32_t other) const { return other == (uint32_t)m_handle; }
+	bool operator!=(const uint32_t other) const { return !(operator==(other)); }
 
 	bool operator==(const Entity &other) const { return other.m_handle == m_handle; }
 	bool operator!=(const Entity &other) const { return !(operator==(other)); }

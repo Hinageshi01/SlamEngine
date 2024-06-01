@@ -121,10 +121,11 @@ int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex, uint32_t x, uint32_t 
 
 	int data;
 	TextureFormat format = m_attachments.at(attachmentIndex).m_pTexture->GetFormat();
-	glReadPixels(x, y, 1, 1, GLTextureFormat[(size_t)format], GLDataType[(size_t)format], &data);
+	// We assume that the origin of the texture is on the upper left,
+	// but the origin of OpenGL texture is on the lower left.
+	glReadPixels(x, m_height - y, 1, 1, GLTextureFormat[(size_t)format], GLDataType[(size_t)format], &data);
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	return data;
 }
 
