@@ -4,6 +4,13 @@
 
 #include <glm/mat4x4.hpp>
 
+namespace sl
+{
+
+class SceneViewportResizeEvent;
+
+}
+
 class RendererLayer : public sl::Layer
 {
 public:
@@ -22,6 +29,8 @@ public:
 private:
 	void BasePass();
 	void EntityIDPass();
+
+	bool OnSceneViewportResize(sl::SceneViewportResizeEvent &event);
 
 	glm::mat4 m_viewProjectionCache;
 };

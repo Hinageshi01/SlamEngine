@@ -840,10 +840,6 @@ void ImGuiLayer::ShowSceneViewport()
 
 		sl::SceneViewportResizeEvent event{ m_sceneViewportSizeX , m_sceneViewportSizeY };
 		m_eventCallback(event);
-
-		// TODO: Move them to RenerLayer OnEnvent
-		sl::RenderCore::GetMainFramebuffer()->Resize(m_sceneViewportSizeX, m_sceneViewportSizeY);
-		sl::RenderCore::GetEntityIDFramebuffer()->Resize(m_sceneViewportSizeX, m_sceneViewportSizeY);
 	}
 
 	// Draw main frame buffer color attachment
@@ -861,11 +857,11 @@ void ImGuiLayer::ShowSceneViewport()
 		return;
 	}
 
+	// Camera controller mode
+	SetCameraControllerMode();
+
 	// Mouse pick
 	MousePick();
-
-	// Camera controller mode
-	CameraControllerMode();
 
 	ImGui::End();
 }
@@ -907,6 +903,21 @@ void ImGuiLayer::ShowImGuizmoTransform()
 	// ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4{ 1.0f }), 1);
 }
 
+void ImGuiLayer::SetCameraControllerMode()
+{
+	if (ImGui::IsWindowHovered())
+	{
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+		{
+			sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::FPS;
+		}
+		else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+		{
+			sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::Editor;
+		}
+	}
+}
+
 void ImGuiLayer::MousePick()
 {
 	// Origin is on the upper left.
@@ -938,21 +949,6 @@ void ImGuiLayer::MousePick()
 			mouseLocalPosX, mouseLocalPosY);
 
 		m_selectedEntity = crtEntity;
-	}
-}
-
-void ImGuiLayer::CameraControllerMode()
-{
-	if (ImGui::IsWindowHovered())
-	{
-		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-		{
-			sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::FPS;
-		}
-		else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
-		{
-			sl::ECSWorld::GetEditorCameraComponent().m_controllerMode = sl::CameraControllerMode::Editor;
-		}
 	}
 }
 

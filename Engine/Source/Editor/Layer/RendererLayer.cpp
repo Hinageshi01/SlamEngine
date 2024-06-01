@@ -1,5 +1,6 @@
 #include "RendererLayer.h"
 
+#include "Event/SceneViewportEvent.h"
 #include "RenderCore/RenderCore.h"
 #include "Resource/TextureResource.h"
 #include "Scene/ECSWorld.h"
@@ -16,7 +17,8 @@ void RendererLayer::OnDetach()
 
 void RendererLayer::OnEvent(sl::Event &event)
 {
-
+	sl::EventDispatcher dispatcher(event);
+	dispatcher.Dispatch<sl::SceneViewportResizeEvent>(BIND_EVENT_CALLBACK(RendererLayer::OnSceneViewportResize));
 }
 
 void RendererLayer::BeginFrame()
@@ -93,3 +95,12 @@ void RendererLayer::EntityIDPass()
 
 	sl::RenderCore::GetEntityIDFramebuffer()->Unbind();
 }
+
+bool RendererLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &event)
+{
+	sl::RenderCore::GetMainFramebuffer()->Resize(event.GetWidth(), event.GetHeight());
+	sl::RenderCore::GetEntityIDFramebuffer()->Resize(event.GetWidth(), event.GetHeight());
+
+	return true;
+}
+

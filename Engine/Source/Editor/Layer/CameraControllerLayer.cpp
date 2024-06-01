@@ -194,7 +194,7 @@ bool CameraControllerLayer::OnSceneViewportResize(sl::SceneViewportResizeEvent &
 	camera.m_fovMultiplier = fovMultiplier;
 	camera.m_isDirty = true;
 
-	return true;
+	return false;
 }
 
 bool CameraControllerLayer::OnMouseButtonRelease(sl::MouseButtonReleaseEvent &event)
