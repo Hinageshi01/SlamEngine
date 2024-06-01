@@ -112,15 +112,19 @@ void OpenGLFrameBuffer::Clear(uint32_t attachmentIndex, const void *pClearData) 
 	m_attachments.at(attachmentIndex).m_pTexture->Clear(pClearData);
 }
 
-int OpenGLFrameBuffer::ReadPixel(uint32_t colorAttachmentIndex, uint32_t x, uint32_t y)
+int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex, uint32_t x, uint32_t y)
 {
-	SL_ENGINE_ASSERT_INFO(colorAttachmentIndex < m_colorAttachmentCount, "Color attachment index out of range!");
+	SL_ENGINE_ASSERT_INFO(attachmentIndex < m_colorAttachmentCount, "Attachment index out of range!");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
+	glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
 
 	int data;
-	//glNamedFramebufferReadBuffer(m_handle, GL_COLOR_ATTACHMENT0 + colorAttachmentIndex);
-	glReadBuffer(GL_COLOR_ATTACHMENT0 + colorAttachmentIndex);
-	glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &data);
+	TextureFormat format = m_attachments.at(attachmentIndex).m_pTexture->GetFormat();
+	glReadPixels(x, y, 1, 1, GLTextureFormat[(size_t)format], GLDataType[(size_t)format], &data);
 	
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	return data;
 }
 

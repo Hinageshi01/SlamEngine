@@ -23,7 +23,7 @@ OpenGLTexture2D::~OpenGLTexture2D()
 
 void OpenGLTexture2D::Clear(const void *pClearData) const
 {
-	glClearTexImage(m_handle, 0, GL_RED_INTEGER, GL_INT, pClearData);
+	glClearTexImage(m_handle, 0, GLTextureFormat[(size_t)m_format], GLDataType[(size_t)m_format], pClearData);
 }
 
 void OpenGLTexture2D::Resize(uint32_t width, uint32_t height, const void *pData)

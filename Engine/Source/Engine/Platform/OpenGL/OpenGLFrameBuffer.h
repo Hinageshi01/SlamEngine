@@ -21,8 +21,7 @@ public:
 	virtual uint32_t GetHeight() const override { return m_height; }
 
 	virtual void Clear(uint32_t attachmentIndex, const void *pClearData) const override;
-	// TEMPORARY: Only for reading entity ID fo now.
-	virtual int ReadPixel(uint32_t colorAttachmentIndex, uint32_t x, uint32_t y) override;
+	virtual int ReadPixel(uint32_t attachmentIndex, uint32_t x, uint32_t y) override;
 
 	virtual uint32_t GetAttachmentHandle(size_t i = 0) const override;
 
